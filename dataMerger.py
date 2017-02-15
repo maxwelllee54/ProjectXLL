@@ -12,4 +12,22 @@ class OptionDataMerger():
         self.rootPath = rooPath
         self.optionData = pd.DataFrame
 
-    def readCSV(self):
+    def fileList(self):
+        fileList = []
+
+        dir_list = os.walk(self.rootPath)
+
+        for root, dirs, files in dir_list:
+            for file in files:
+                if file[-3:] in ['csv', 'lsx', 'xls']:
+                    fileList.append(os.path.join(root, file))
+
+        return fileList
+
+
+if __name__ == '__main__':
+    print(OptionDataMerger('/Users/maxwelllee54/GitHubs/ProjectXLL').fileList())
+
+
+
+
