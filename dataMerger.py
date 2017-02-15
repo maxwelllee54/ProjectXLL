@@ -22,7 +22,11 @@ class OptionDataMerger():
                 if file[-3:] in ['csv', 'lsx', 'xls']:
                     fileList.append(os.path.join(root, file))
 
-        return fileList
+
+        for file in fileList:
+            if file[-3:] == 'csv':
+                csv = pd.read_csv()
+
 
 
 if __name__ == '__main__':
