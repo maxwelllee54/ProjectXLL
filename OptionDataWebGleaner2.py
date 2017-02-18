@@ -13,7 +13,7 @@ def main():
     #tickerList = np.random.choice(tickerList, 50, replace=False)
     print(tickerList)
     for ticker in tickerList:
-        data = OptionDataWebGleaner(ticker=ticker).saveFile()
+        OptionDataWebGleaner(ticker=ticker).saveFile()
 
     print('The download is complete. Running time: {:.2f} mins'.format((datetime.now() - timeStart).seconds/60))
 
@@ -311,101 +311,6 @@ class OptionDataWebGleaner():
                 pass
 
             df.to_csv(filename2, mode=mode, header=header)
-
-'''
-    def getAllClean(self, data, N=2000):
-        options = {}
-        filename = 'CleanData.csv'
-        tickerList = np.random.choice(list(data.keys()), min(N, len(list(data.keys()),)), replace=False)
-
-        for ticker in tickerList:
-            try:
-                df = data[ticker]
-                # clean the outliers and missing values
-                df = df.loc[(df['IV'] > 0.00) & (df['IV'] < 2.00)]
-                #df = df.loc[df['Vol'] > 0]
-                df = df.dropna(subset=['Last'])
-
-                if os.path.isfile(filename):
-                    header = False
-                else:
-                    header = True
-
-                with open(filename, 'a') as f:
-                        df.to_csv(f, header=header)
-
-            except:
-                continue
-
-            options[ticker] = df
-        return options
-
-
-        def getGreeks(self):
-
-            lastPage = self.getGreeksUrl().find('a', {'id': 'quotes_content_left_lb_LastPage'})
-            lastPageNo = re.findall(pattern='(?:page=)(\d+)', string=str(lastPage))
-            pageNo = ''.join(lastPageNo)
-
-            if pageNo == '':
-                pageNo = 1
-            else:
-                pageNo = int(pageNo)
-
-            df = pd.DataFrame()
-
-            for i in range(pageNo):
-                table = self.getGreeksUrl(i + 1).find_all('table')[5]
-                content = table.find_all('td')
-                lst = [text.text for text in content]
-
-                if not lst:
-                    return df
-
-                try:
-
-                    arr = np.array(lst).reshape((len(lst) // 16, 16))
-                    dfTemp = pd.DataFrame(arr)
-                    df = pd.concat([df, dfTemp])
-
-                except ValueError:
-                    print('greeks error')
-
-            # make sure the index format in options and greeks are the same, for later dateframe merge
-            df.iloc[:, 8] = df.iloc[:, 8].astype(float)
-
-            tuples = list(zip(df.iloc[:, 0], df.iloc[:, 8]))
-
-            index = pd.MultiIndex.from_tuples(tuples, names=['ExpDate', 'StrikePrice'])
-
-            df.rename(columns={8: 'StrikePrice'}, inplace=True)
-
-            callGreeks = df.iloc[:, 0:9]
-            putGreeks = df.iloc[:, 7:17]
-
-            callGreeks = callGreeks.set_index(index)
-            putGreeks = putGreeks.set_index(index)
-
-            callheader = ['ExpDate', 'Delta', 'Gamma', 'Rho', 'Theta', 'Vega', 'IV', 'Ticker', 'StrikePrice']
-            putheader = ['Ticker', 'StrikePrice', 'ExpDate', 'Delta', 'Gamma', 'Rho', 'Theta', 'Vega', 'IV']
-            callGreeks.columns = callheader
-            putGreeks.columns = putheader
-
-            # reorder and trim the columns
-            callGreeks = callGreeks[['Ticker', 'Delta', 'Gamma', 'Rho', 'Theta', 'Vega', 'IV']]
-            putGreeks = putGreeks[['Ticker', 'Delta', 'Gamma', 'Rho', 'Theta', 'Vega', 'IV']]
-
-            # manage the datatypes
-            callGreeks.iloc[:, 1:] = callGreeks.iloc[:, 1:].astype(float)
-            putGreeks.iloc[:, 1:] = putGreeks.iloc[:, 1:].astype(float)
-
-            # in order to drop empty strike price rows, replace empty strings with NaN
-            callGreeks['IV'].replace('', np.nan, inplace=True)
-            putGreeks['IV'].replace('', np.nan, inplace=True)
-            # make sure it returns the correct option data for the underlying asset
-
-            return callGreeks[callGreeks.Ticker == self.ticker.upper()], putGreeks[
-                putGreeks.Ticker == self.ticker.upper()]'''
 
 if __name__ == '__main__':
     main()

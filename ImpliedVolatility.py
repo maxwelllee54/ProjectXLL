@@ -5,7 +5,7 @@ import time
 
 
 class ImpliedVolatility():
-    def __init__(self, S, K, T, r, sigma, cStar, optionType, maxIter = 1e10, tolerance = 1e-10):
+    def __init__(self, S, K, T, r, sigma, cStar, optionType, maxIter = 1e4, tolerance = 1e-10):
         self.S = S
         self.K = K
         self.T = T
@@ -65,17 +65,18 @@ class ImpliedVolatility():
 
         return x3
 
-    def bsmBisectionVol(self, upper = 5):
+    def bsmBisectionVol(self, upper = 10):
         lower = 1e-15
         middle = (lower + upper)/2
+
         for i in range(self.maxIter):
             old_middle = (lower + upper) / 2
             if self.f(lower) * self.f(middle) < 0:
                 upper = middle
-                middle = (lower + upper) / 2
             else:
                 lower = middle
-                middle = (lower + upper) / 2
+
+            middle = (lower + upper) / 2
 
             if np.fabs(old_middle - middle) < self.tolerance:
                 return middle
@@ -91,13 +92,17 @@ class ImpliedVolatility():
 
         return self.sigma
 
-    def bsmMullerBisectionVol(self, upper = 5):
+    def bsmMullerBisectionVol(self, upper = 10):
         lower = 1e-15
         middle = (lower + upper) / 2
 
         for i in range(self.maxIter):
+
             muller = self.bsmMuller(lower, upper, middle)
+
             old_middle = (lower + upper) / 2
+
+
             if self.f(lower) * self.f(middle) < 0:
                 upper = middle
             else:
@@ -108,7 +113,7 @@ class ImpliedVolatility():
             else:
                 middle = muller
 
-            if np.fabs(old_middle - middle) < self.tolerance:
+            if (np.fabs(old_middle - middle) < self.tolerance) or np.isnan(self.bsmMuller(lower, upper, middle)):
                 return middle
 
         return middle
@@ -124,6 +129,7 @@ class ImpliedVolatility():
                 return self.sigma
 
         return self.sigma
+
 
 
 if __name__ == '__main__':
