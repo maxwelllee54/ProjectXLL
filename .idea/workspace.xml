@@ -2,16 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="44fd8fe3-0973-4238-9d00-d86e62872f60" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MethodPerformance.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/NasdaqStockList copy.csv" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/dataReader.ipynb" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/performancePlot.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CleanData.csv" afterPath="$PROJECT_DIR$/CleanData.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DirtyData.csv" afterPath="$PROJECT_DIR$/DirtyData.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ImpliedVolatility.py" afterPath="$PROJECT_DIR$/ImpliedVolatility.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NasdaqStockList.csv" afterPath="$PROJECT_DIR$/NasdaqStockList.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/OptionDataWebGleaner2.py" afterPath="$PROJECT_DIR$/OptionDataWebGleaner2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MethodPerformance.py" afterPath="$PROJECT_DIR$/MethodPerformance.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dataMerger.ipynb" afterPath="$PROJECT_DIR$/dataMerger.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/optionData.csv" afterPath="$PROJECT_DIR$/optionData.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dataMerger.py" afterPath="$PROJECT_DIR$/dataMerger.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -29,8 +26,8 @@
       <file leaf-file-name="ImpliedVolatility.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ImpliedVolatility.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1280">
-              <caret line="113" column="31" lean-forward="false" selection-start-line="113" selection-start-column="31" selection-end-line="113" selection-end-column="31" />
+            <state relative-caret-position="360">
+              <caret line="184" column="0" lean-forward="true" selection-start-line="184" selection-start-column="0" selection-end-line="184" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -42,16 +39,35 @@
         <entry file="file://$PROJECT_DIR$/dataMerger.ipynb">
           <provider selected="true" editor-type-id="ipnb-editor">
             <state>
-              <selected id="12" />
+              <selected id="4" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MethodPerformance.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="dataReader.ipynb" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dataReader.ipynb">
+          <provider selected="true" editor-type-id="ipnb-editor">
+            <state>
+              <selected id="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dataMerger.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dataMerger.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="224">
+              <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MethodPerformance.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MethodPerformance.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="640">
-              <caret line="40" column="20" lean-forward="false" selection-start-line="40" selection-start-column="20" selection-end-line="40" selection-end-column="20" />
+            <state relative-caret-position="496">
+              <caret line="51" column="108" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
               <folding>
                 <element signature="e#0#47#0" expanded="true" />
               </folding>
@@ -59,14 +75,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="OptionDataWebGleaner2.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/OptionDataWebGleaner2.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3884">
-              <caret line="15" column="8" lean-forward="false" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="8" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-              </folding>
+      <file leaf-file-name="performancePlot.ipynb" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/performancePlot.ipynb">
+          <provider selected="true" editor-type-id="ipnb-editor">
+            <state>
+              <selected id="0" />
             </state>
           </provider>
         </entry>
@@ -77,12 +90,14 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="Jupyter Notebook" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>options err</find>
+      <find>reset_index</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -91,20 +106,22 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/dataMerger.py" />
         <option value="$PROJECT_DIR$/dateMerger.ipynb" />
         <option value="$PROJECT_DIR$/../../Financial_Programming/Project/Project2/LI_Tang_Gao_CISC5352_project_1/OptionDataWebGleaner2.py" />
         <option value="$PROJECT_DIR$/OptionDataWebGleaner2.py" />
         <option value="$PROJECT_DIR$/CleanData.csv" />
-        <option value="$PROJECT_DIR$/dataMerger.ipynb" />
+        <option value="$PROJECT_DIR$/dataMerger.py" />
         <option value="$PROJECT_DIR$/ImpliedVolatility.py" />
         <option value="$PROJECT_DIR$/MethodPerformance.py" />
+        <option value="$PROJECT_DIR$/dataReader.ipynb" />
+        <option value="$PROJECT_DIR$/dataMerger.ipynb" />
+        <option value="$PROJECT_DIR$/performancePlot.ipynb" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="5" />
-    <option name="y" value="23" />
+    <option name="x" value="3" />
+    <option name="y" value="24" />
     <option name="width" value="1997" />
     <option name="height" value="1053" />
   </component>
@@ -144,7 +161,7 @@
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
-  <component name="RunManager" selected="Python.MethodPerformance">
+  <component name="RunManager" selected="Python.ImpliedVolatility">
     <configuration default="false" name="OptionDataWebGleaner2" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -355,8 +372,8 @@
     </list>
     <recent_temporary>
       <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="Python.MethodPerformance" />
-        <item index="1" class="java.lang.String" itemvalue="Python.ImpliedVolatility" />
+        <item index="0" class="java.lang.String" itemvalue="Python.ImpliedVolatility" />
+        <item index="1" class="java.lang.String" itemvalue="Python.MethodPerformance" />
         <item index="2" class="java.lang.String" itemvalue="Python.OptionDataWebGleaner2 (1)" />
         <item index="3" class="java.lang.String" itemvalue="Python.OptionDataWebGleaner2" />
       </list>
@@ -398,8 +415,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="5" y="23" width="1997" height="1053" extended-state="0" />
-    <editor active="true" />
+    <frame x="3" y="24" width="1997" height="1053" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1118421" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -407,7 +424,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -487,16 +504,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dataMerger.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="14" column="22" lean-forward="false" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
-          <folding>
-            <element signature="e#83#92#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../Financial_Programming/Project/Project2/LI_Tang_Gao_CISC5352_project_1/OptionDataWebGleaner2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="80">
@@ -547,10 +554,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/dataMerger.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/OptionDataWebGleaner2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3884">
-          <caret line="15" column="8" lean-forward="false" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="8" />
+        <state relative-caret-position="-49">
+          <caret line="193" column="39" lean-forward="false" selection-start-line="193" selection-start-column="39" selection-end-line="193" selection-end-column="39" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
           </folding>
@@ -559,28 +574,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ImpliedVolatility.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1280">
-          <caret line="113" column="31" lean-forward="false" selection-start-line="113" selection-start-column="31" selection-end-line="113" selection-end-column="31" />
+        <state relative-caret-position="360">
+          <caret line="184" column="0" lean-forward="true" selection-start-line="184" selection-start-column="0" selection-end-line="184" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/dataReader.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="6" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dataMerger.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
-          <selected id="12" />
+          <selected id="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MethodPerformance.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="640">
-          <caret line="40" column="20" lean-forward="false" selection-start-line="40" selection-start-column="20" selection-end-line="40" selection-end-column="20" />
+        <state relative-caret-position="496">
+          <caret line="51" column="108" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
           <folding>
             <element signature="e#0#47#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/performancePlot.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
         </state>
       </provider>
     </entry>

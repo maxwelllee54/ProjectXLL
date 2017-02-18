@@ -130,6 +130,32 @@ class ImpliedVolatility():
 
         return self.sigma
 
+    def bsmMullerBisectionInitial(self, initialIter = 10, lower=1e-15, upper=10):
+
+        middle = (lower + upper) / 2
+
+        for i in range(initialIter):
+
+            muller = self.bsmMuller(lower, upper, middle)
+
+            old_middle = (lower + upper) / 2
+
+
+            if self.f(lower) * self.f(middle) < 0:
+                upper = middle
+            else:
+                lower = middle
+
+            if muller < lower or muller > upper:
+                middle = (lower + upper) / 2
+            else:
+                middle = muller
+
+            if (np.fabs(old_middle - middle) < self.tolerance) or np.isnan(self.bsmMuller(lower, upper, middle)):
+                break
+
+        self.sigma = middle
+
 
 
 if __name__ == '__main__':

@@ -13,19 +13,15 @@ class OptionDataMerger():
         self.optionData = pd.DataFrame
 
     def fileList(self):
+
+        directory = os.walk(self.rootPath)
+
         fileList = []
 
-        dir_list = os.walk(self.rootPath)
-
-        for root, dirs, files in dir_list:
+        for root, dirs, files in directory:
             for file in files:
-                if file[-3:] in ['csv', 'lsx', 'xls']:
+                if file[-3:] in ['csv', 'xls'] or file[-4:] == 'xlsx':
                     fileList.append(os.path.join(root, file))
-
-
-        for file in fileList:
-            if file[-3:] == 'csv':
-                csv = pd.read_csv()
 
 
 
