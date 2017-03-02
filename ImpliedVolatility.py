@@ -90,6 +90,9 @@ class ImpliedVolatility():
             if np.fabs(sigma - self.sigma) < self.tolerance:
                 return self.sigma
 
+            if self.f(self.sigma) < self.tolerance:
+                return self.sigma
+
         return self.sigma
 
     def bsmMullerBisectionVol(self, upper = 10):
