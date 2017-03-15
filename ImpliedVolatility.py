@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import stats
+from scipy.optimize import brentq, brenth, ridder, newton
 from datetime import date
 import time
 
@@ -159,6 +160,33 @@ class ImpliedVolatility():
 
         self.sigma = middle
 
+    def bsmBrentq(self, a=1e-15, b=2):
+        for i in range(self.maxIter):
+            if self.f(a) * self.f(b) < 0:
+                return brentq(self.f, a, b)
+            else:
+                b -= 0.1
+
+
+    def bsmBrenth(self, a=1e-15, b=2):
+        for i in range(self.maxIter):
+            if self.f(a) * self.f(b) < 0:
+                return brenth(self.f, a, b)
+            else:
+                b -= 0.1
+
+    def bsmRidder(self, a=1e-15, b=2):
+        for i in range(self.maxIter):
+            if self.f(a) * self.f(b) < 0:
+                return ridder(self.f, a, b)
+            else:
+                b -= 0.1
+
+    def bsmScipyNewton(self, x0 = None):
+        if x0 == None:
+            x0 = self.sigma
+
+        return newton(self.f, x0)
 
 
 if __name__ == '__main__':
