@@ -1,8 +1,7 @@
 import numpy as np
 from scipy import stats
 from scipy.optimize import brentq, brenth, ridder, newton
-from datetime import date, datetime
-
+from datetime import date
 import time
 import re
 
@@ -68,115 +67,78 @@ class ImpliedVolatility():
 
         return x3
 
-    def bsmBisectionVol(self, upper = 2):
+    def bsmBisectionVol(self, upper = 10):
         lower = 1e-15
         middle = (lower + upper)/2
-        old_middle = (lower + upper)/2
 
         for i in range(self.maxIter):
-
-            if self.f(lower) * self.f(upper) < 0:
-                old_middle = (lower + upper) / 2
-
-                if self.f(lower) * self.f(middle) < 0:
-                    upper = middle
-                else:
-                    lower = middle
-
-                middle = (lower + upper) / 2
-
-                if np.fabs(old_middle - middle) < self.tolerance:
-                    return middle
+            old_middle = (lower + upper) / 2
+            if self.f(lower) * self.f(middle) < 0:
+                upper = middle
             else:
+                lower = middle
 
-                upper -= 0.1
+            middle = (lower + upper) / 2
 
-        print('Max iteration reached! Current steps are {}, {}'.format(old_middle, middle))
+            if np.fabs(old_middle - middle) < self.tolerance:
+                return middle
+
         return middle
 
     def bsmNewtonVol(self):
-        sigma=0
         for i in range(self.maxIter):
-
             sigma = self.sigma
             self.sigma = sigma - self.f()/self.bsmVega()
             if np.fabs(sigma - self.sigma) < self.tolerance:
                 return self.sigma
+
             if self.f(self.sigma) < self.tolerance:
                 return self.sigma
-            if np.isnan(self.sigma):
-                return 0
 
-            if i > (self.maxIter - 20):
-                print('Steps: {}, {}'.format(sigma, self.sigma))
+        return self.sigma
 
-        print('Max iteration reached! Not converge!\n')
-        return 0
-
-    def bsmMullerBisectionVol(self, upper = 2):
+    def bsmMullerBisectionVol(self, upper = 10):
         lower = 1e-15
         middle = (lower + upper) / 2
-        old_middle = (lower + upper) / 2
 
         for i in range(self.maxIter):
-            if self.f(lower) * self.f(upper) < 0:
 
-                muller = self.bsmMuller(lower, upper, middle)
+            muller = self.bsmMuller(lower, upper, middle)
 
-                old_middle = (lower + upper) / 2
+            old_middle = (lower + upper) / 2
 
 
-                if self.f(lower) * self.f(middle) < 0:
-                    upper = middle
-                else:
-                    lower = middle
-
-                if muller < lower or muller > upper:
-                    middle = (lower + upper) / 2
-                else:
-                    middle = muller
-
-                if (np.fabs(old_middle - middle) < self.tolerance) or np.isnan(self.bsmMuller(lower, upper, middle)):
-                    if self.f(middle) < self.tolerance:
-                        return middle
+            if self.f(lower) * self.f(middle) < 0:
+                upper = middle
             else:
-                upper -= 0.1
+                lower = middle
 
-        print('Max iteration reached! Current steps are {}, {}'.format(old_middle, middle))
+            if muller < lower or muller > upper:
+                middle = (lower + upper) / 2
+            else:
+                middle = muller
+
+            if (np.fabs(old_middle - middle) < self.tolerance) or np.isnan(self.bsmMuller(lower, upper, middle)):
+                return middle
+
         return middle
 
     def bsmHalley(self):
-        #newSigma = self.sigma
+        newSigma = self.sigma
         for i in range(self.maxIter):
 
             newSigma = self.sigma + (-self.bsmVega() + np.sqrt(self.bsmVega() ** 2 - 2 * self.f() * self.bsmVomma())) / self.bsmVomma()
             self.sigma = newSigma
 
             if np.fabs(newSigma - self.sigma) < self.tolerance:
-
                 return self.sigma
 
-            if self.f(self.sigma) < self.tolerance:
-                return self.sigma
+        return self.sigma
 
-            if np.isnan(self.sigma):
-                return 0
-
-            if i > (self.maxIter - 20):
-                print('Steps: {}, {}'.format(newSigma, self.sigma))
-
-        print('Max iteration reached! Not converge!\n')
-        return 0
-
-    def bsmMullerBisectionInitial(self, initialIter = 1, lower=1e-15, upper=2):
-
-        for i in range(self.maxIter):
-            if self.f(lower) * self.f(upper) < 0:
-                break
-            else:
-                upper -= 0.1
+    def bsmMullerBisectionInitial(self, initialIter = 10, lower=1e-15, upper=10):
 
         middle = (lower + upper) / 2
+
         for i in range(initialIter):
 
             muller = self.bsmMuller(lower, upper, middle)
@@ -233,4 +195,44 @@ class ImpliedVolatility():
 
 
 if __name__ == '__main__':
-    pass
+
+    today = date(2016,11,15)
+    expDay = date(2016, 12, 16)
+    T = expDay - today
+    sigma0 = 0.5
+    r = 0.02 # 3-month T-bill rate
+    currentStockPrice = 16.26
+
+
+    bacOptionList = [[currentStockPrice, 16.00, T.days / 365, r , sigma0, 0.77, 'call'],
+                 [currentStockPrice, 17.00, T.days / 365, r, sigma0, 0.31, 'call'],
+                 [currentStockPrice, 16.00, T.days / 365, r, sigma0, 0.56, 'put'],
+                 [currentStockPrice, 17.00, T.days / 365, r, sigma0, 1.12, 'put']]
+
+
+    print('The underlying asset is Bank of America (BAC), current stock price is ${:.2f}, the expiration date is {:%Y-%m-%d}\n'.format(currentStockPrice, expDay))
+    print('Now, let\'s begin:\n')
+
+    time_start = time.clock()
+    for option in bacOptionList:
+        impvol = ImpliedVolatility(option[0], option[1], option[2], option[3], option[4], option[5], option[6]).bsmBisectionVol()
+        print('Here is a {0} option.\nThe strike price is ${1:.2f} and option price is ${2:.2f}.\nThe implied volatility is {3:.16%}\n'.format(option[6], option[1], option[5], impvol))
+    print('The Bisection method takes {:.4f} seconds to run\n'.format(time.clock() - time_start))
+
+    time_start = time.clock()
+    for option in bacOptionList:
+        impvol = ImpliedVolatility(option[0], option[1], option[2], option[3], option[4], option[5], option[6]).bsmMullerBisectionVol()
+        print('Here is a {0} option.\nThe strike price is ${1:.2f} and option price is ${2:.2f}.\nThe implied volatility is {3:.16%}\n'.format(option[6], option[1], option[5], impvol))
+    print('The Muller-Bisection method takes {:.4f} seconds to run\n'.format(time.clock() - time_start))
+
+    time_start = time.clock()
+    for option in bacOptionList:
+        impvol = ImpliedVolatility(option[0], option[1], option[2], option[3], option[4], option[5], option[6]).bsmNewtonVol()
+        print('Here is a {0} option.\nThe strike price is ${1:.2f} and option price is ${2:.2f}.\nThe implied volatility is {3:.16%}\n'.format(option[6], option[1], option[5], impvol))
+    print('The Newton method takes {:.4f} seconds to run\n'.format(time.clock() - time_start))
+
+    time_start = time.clock()
+    for option in bacOptionList:
+        impvol = ImpliedVolatility(option[0], option[1], option[2], option[3], option[4], option[5], option[6]).bsmHalley()
+        print('Here is a {0} option.\nThe strike price is ${1:.2f} and option price is ${2:.2f}.\nThe implied volatility is {3:.15%}\n'.format(option[6], option[1], option[5], impvol))
+    print('The Halley method takes {:.4f} seconds to run\n'.format(time.clock() - time_start))
