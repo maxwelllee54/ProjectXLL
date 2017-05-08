@@ -104,7 +104,7 @@ class OptionDataWebGleaner():
 
 
     # get all pages' option information and put into DataFrame
-    def getOptions(self) -> object:
+    def getOptions(self):
         df = pd.DataFrame()
         lastPage = self.getUrl().find('a', {'id': 'quotes_content_left_lb_LastPage'})
         lastPageNo = re.findall(pattern='(?:page=)(\d+)', string=str(lastPage))
