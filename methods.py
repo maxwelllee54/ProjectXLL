@@ -2,13 +2,18 @@ from ImpliedVolatility import ImpliedVolatility
 import pandas as pd
 import numpy as np
 import datetime
-def performance(df, method, r=0.05, sigma0=0.5, initialIter=1):
+def performance(df, method, r=0.005, sigma0=None, initialIter=1, maxIter = 10000):
     time_start = datetime.datetime.now()
     dfCopy = df.copy()
 
     for i in df.index:
+        if sigma0 == None:
+            sigma0 = np.random.uniform(0, 1)
+
         impVol = ImpliedVolatility(df.ix[i, 'StockPrice'], df.ix[i, 'StrikePrice'], df.ix[i, 'T'], r, sigma0,
-                                   df.ix[i, 'Last'], df.ix[i, 'Type'])
+                                   df.ix[i, 'Last'], df.ix[i, 'Type'], maxIter=maxIter)
+
+        dfCopy.ix[i, 'sigma'] = sigma0
 
         if method == 'bisection':
             dfCopy.ix[i, method] = impVol.bsmBisectionVol()[0]
@@ -60,36 +65,28 @@ def performance(df, method, r=0.05, sigma0=0.5, initialIter=1):
             dfCopy.ix[i, method] = impVol.bsmScipyNewton()[0]
             dfCopy.ix[i, method + '_steps'] = impVol.bsmScipyNewton()[1]
 
-    dfCopy.loc[:, 'log_difference'] = -np.log(np.fabs(dfCopy.IV - dfCopy.ix[:, method]))
-    dfCopy.loc[:, 'MSE'] = np.power((dfCopy.IV - dfCopy.ix[:, method]), 2)
-    dfCopy.loc[:, 'log_mse'] = np.log(1 + dfCopy.MSE)
+    # discard the records that diverged
+    dfCopy.to_csv(method + '.csv')
 
-    log_accuracy = dfCopy.log_difference.mean()
-    mse = dfCopy.MSE.mean()
-    log_mse = dfCopy.log_mse.mean()
+    #dfNew = dfCopy.loc[dfCopy.loc[:, method + '_steps'] < maxIter, :].copy()
+    dfNew = dfCopy.loc[np.isfinite(dfCopy.loc[:, method + '_steps']), :].copy()
+
+    dfNew.loc[:, 'log_difference'] = -np.log(np.fabs(dfNew.IV - dfNew.ix[:, method]))
+    dfNew.loc[:, 'MSE'] = np.power(dfNew.IV - dfNew.ix[:, method], 2)
+    dfNew.loc[:, 'MSD'] = np.fabs(dfNew.IV - dfNew.ix[:, method])
+    dfNew.loc[:, 'log_mse'] = np.log(1 + dfNew.MSE)
+
+    log_accuracy = dfNew.log_difference.mean()
+    mse = dfNew.MSE.mean()
+    msd = dfNew.MSD.mean()
+    sigma = dfNew.sigma.mean()
+    log_mse = dfNew.log_mse.mean()
     duration = datetime.datetime.now() - time_start
-    efficiency = np.power(np.e, mse) * np.log(1 + duration.seconds)
-    steps = dfCopy.loc[:, method + '_steps'].mean()
+    steps = dfNew.loc[:, method + '_steps'].mean()
+    efficiency = np.power(np.e, mse) / np.log2(steps+1)
 
 
-    return log_accuracy, mse, log_mse, duration, steps, efficiency  # datetime.time(hour=0, minute=0, second=duration.seconds, microsecond=duration.microseconds).strftime("%M:%S.%f")[:-3]
+    return log_accuracy, mse, msd, log_mse, duration, steps, efficiency, sigma  # datetime.time(hour=0, minute=0, second=duration.seconds, microsecond=duration.microseconds).strftime("%M:%S.%f")[:-3]
 
 if __name__ == '__main__':
-    data = pd.read_csv('europeanOptions_.01tol.csv')
-    data = data.loc[:, ['currentDate', 'ExpDate', 'StrikePrice', 'Ticker', 'Type', 'Last', 'IV', 'StockPrice', 'T']]
-
-    testMethods = ['brentq', 'brenth', 'ridder', 'scipy_newton', 'bisection', 'mullerBisection', 'newton', 'halley',
-                   'new_newton', 'new_halley']
-    testSigma = [0.3, 0.5, 0.7, 1, 1.5, 1.7, 2]
-    testIter = [1, 2, 3, 5]
-    result = pd.DataFrame(index=testMethods, columns=['log_accuracy', 'MSE', 'Time(hh:mm:ss)'])
-    dicResult = {}
-
-    for iter in testIter:
-        dicResult[iter] = {}
-        for sigma in testSigma:
-            for method in testMethods:
-                result.loc[method, :] = performance(data, method, sigma0=sigma, initialIter=iter)
-            dicResult[iter][sigma] = result.copy()
-            print('This is the test result for initial point sigma {:.2f}, \
-    initial iteration {:d} times:\n{}\n\n'.format(sigma, iter, result))
+    pass

@@ -5,7 +5,7 @@ import re
 
 
 class ImpliedVolatility():
-    def __init__(self, S, K, T, r, sigma, cStar, optionType, maxIter = 1000, tolerance = 1e-7):
+    def __init__(self, S, K, T, r, sigma, cStar, optionType, maxIter = 10000, tolerance = 1e-10):
         self.S = S
         self.K = K
         self.T = T
@@ -65,48 +65,54 @@ class ImpliedVolatility():
 
         return x3
 
-    def bsmBisectionVol(self, upper = 2):
+    def bsmBisectionVol(self, upper = 3):
+
         lower = -0.1
         middle = (lower + upper)/2
-        old_middle = (lower + upper)/2
+
+        if self.f(lower) * self.f(upper) > 0:
+            print('No root! Change the lower and upper value!\n')
+            return self.sigma, np.nan
 
         for i in range(self.maxIter):
 
-            if self.f(lower) * self.f(upper) < 0:
-                old_middle = (lower + upper) / 2
+            if self.f(lower) * self.f(upper) <= 0:
 
                 if self.f(lower) * self.f(middle) < 0:
                     upper = middle
-                else:
+
+                if self.f(upper) * self.f(middle) < 0:
                     lower = middle
 
                 middle = (lower + upper) / 2
 
-                if self.f(middle) < self.tolerance:
-                    return middle, i
-                elif np.fabs(old_middle - middle) < self.tolerance:
-                    return middle, i
-            else:
+                if np.fabs(self.f(middle)) < self.tolerance:
 
-                upper -= 0.1
+                    return middle, i+1
 
         #print('Max iteration reached! This is Bisection method.\n')
         return middle, self.maxIter
 
     def bsmNewtonVol(self):
-        sigma=0
+
         for i in range(self.maxIter):
 
             sigma = self.sigma
-            self.sigma = sigma - self.f()/self.bsmVega()
-            if self.f(self.sigma) < self.tolerance:
-                return self.sigma, i
-            elif np.fabs(sigma - self.sigma) < self.tolerance:
-                return self.sigma, i
+            self.sigma = sigma - self.f(sigma)/self.bsmVega()
+
+            if np.fabs(self.f(self.sigma)) < self.tolerance:
+                return self.sigma, i + 1
 
             # avoid the sigma diverge and become too big
+            # if not (0.0 <= self.sigma <= 3):
+            #    print('Newton Diverge!\n')
+            #    return sigma, self.maxIter
+
             if np.isnan(self.sigma):
                 break
+
+            if np.fabs(sigma - self.sigma) < self.tolerance:
+                return self.sigma, i + 1
 
             #if i > (self.maxIter - 20):
             #    print('Steps: {}, {}'.format(sigma, self.sigma))
@@ -114,57 +120,55 @@ class ImpliedVolatility():
         #print('Max iteration reached! This is Newton method.\n')
         return self.sigma, self.maxIter
 
-    def bsmMullerBisectionVol(self, upper = 2):
+    def bsmMullerBisectionVol(self, upper = 3):
         lower = -0.1
         middle = (lower + upper) / 2
-        old_middle = (lower + upper) / 2
+
+        if self.f(lower) * self.f(upper) > 0:
+            print('No root! Change the lower and upper value!\n')
+            return self.sigma, np.nan
 
         for i in range(self.maxIter):
-            if self.f(lower) * self.f(upper) < 0:
+            if self.f(lower) * self.f(upper) <= 0:
 
                 muller = self.bsmMuller(lower, upper, middle)
 
-                old_middle = (lower + upper) / 2
-
-
                 if self.f(lower) * self.f(middle) < 0:
                     upper = middle
-                else:
+
+                if self.f(upper) * self.f(middle) < 0:
                     lower = middle
 
                 if muller < lower or muller > upper:
+
                     middle = (lower + upper) / 2
+
                 else:
                     middle = muller
 
-                if self.f(middle) < self.tolerance:
-                    return middle, i
-                elif np.fabs(old_middle - middle) < self.tolerance:
-                    return middle, i
-
-                if np.isnan(self.bsmMuller(lower, upper, middle)):
-                    break
-            else:
-                upper -= 0.1
+                if np.fabs(self.f(middle)) < self.tolerance:
+                    return middle, i+1
 
         #print('Max iteration reached! This is MullerBisection method.')
         return middle, self.maxIter
 
     def bsmHalley(self):
-        #newSigma = self.sigma
         for i in range(self.maxIter):
+            oldSigma = self.sigma
+            self.sigma = oldSigma + (-self.bsmVega() + np.sqrt(self.bsmVega() ** 2 - 2 * self.f(oldSigma) * self.bsmVomma())) / self.bsmVomma()
 
-            newSigma = self.sigma + (-self.bsmVega() + np.sqrt(self.bsmVega() ** 2 - 2 * self.f() * self.bsmVomma())) / self.bsmVomma()
-            self.sigma = newSigma
-
-            if self.f(self.sigma) < self.tolerance:
-                return self.sigma, i
-            elif np.fabs(newSigma - self.sigma) < self.tolerance:
-                return self.sigma, i
+            if np.fabs(self.f(self.sigma)) < self.tolerance:
+                return self.sigma, i+1
 
             # diverged
+            #if not (0.0 <= self.sigma <= 3):
+            #    print('Halley Diverge!\n')
+            #    return oldSigma, self.maxIter
             if np.isnan(self.sigma):
                 break
+
+            if np.fabs(oldSigma - self.sigma) < self.tolerance:
+                return self.sigma, i + 1
 
             #if i > (self.maxIter - 20):
             #    print('Steps: {}, {}'.format(newSigma, self.sigma))
@@ -172,32 +176,24 @@ class ImpliedVolatility():
         #print('Max iteration reached! This is Halley!\n')
         return self.sigma, self.maxIter
 
-    def bsmBrentInitial(self, initialIter=1, lower=-0.1, upper=2):
-        for i in range(self.maxIter):
-            if self.f(lower) * self.f(upper) < 0:
-                break
+    def bsmBrentInitial(self, initialIter=1, lower=-0.1, upper=3):
 
-            else:
-                upper -= 0.1
-                print(upper)
+        if self.f(lower) * self.f(upper) > 0:
+            print('No root! Change the lower and upper value!\n')
+            return None
 
         self.sigma = brentq(self.f, lower, upper, args=(), xtol=2e-12, rtol=8.8817841970012523e-16, maxiter=initialIter, full_output=False, disp=False)
 
     def bsmMullerBisectionInitial(self, initialIter=1, lower=-0.1, upper=2):
 
-        for i in range(self.maxIter):
-            if self.f(lower) * self.f(upper) < 0:
-                break
-            else:
-                upper -= 0.1
+        if self.f(lower) * self.f(upper) > 0:
+            print('No root! Change the lower and upper value!\n')
+            return None
 
         middle = (lower + upper) / 2
         for i in range(initialIter):
 
             muller = self.bsmMuller(lower, upper, middle)
-
-            old_middle = (lower + upper) / 2
-
 
             if self.f(lower) * self.f(middle) < 0:
                 upper = middle
@@ -209,32 +205,38 @@ class ImpliedVolatility():
             else:
                 middle = muller
 
-            if (np.fabs(old_middle - middle) < self.tolerance) or np.isnan(self.bsmMuller(lower, upper, middle)):
+            if np.fabs(self.f(middle)) < self.tolerance:
                 break
 
         self.sigma = middle
 
-    def bsmBrentq(self, a=-0.1, b=2):
+    def bsmBrentq(self, a=-0.1, b=3):
+        if self.f(a) * self.f(b) > 0:
+            print('No root! Change the lower and upper value!\n')
+            return self.sigma, np.nan
+
         for i in range(self.maxIter):
             if self.f(a) * self.f(b) < 0:
                 return brentq(self.f, a, b, args=(), xtol=2e-12, rtol=8.8817841970012523e-16, maxiter=100, full_output=True, disp=True)
-            else:
-                b -= 0.1
 
 
-    def bsmBrenth(self, a=-0.1, b=2):
+    def bsmBrenth(self, a=-0.1, b=3):
+        if self.f(a) * self.f(b) > 0:
+            print('No root! Change the lower and upper value!\n')
+            return self.sigma, np.nan
+
         for i in range(self.maxIter):
             if self.f(a) * self.f(b) < 0:
                 return brenth(self.f, a, b, args=(), xtol=2e-12, rtol=8.8817841970012523e-16, maxiter=100, full_output=True, disp=True)
-            else:
-                b -= 0.1
 
-    def bsmRidder(self, a=-0.1, b=2):
+    def bsmRidder(self, a=-0.1, b=3):
+        if self.f(a) * self.f(b) > 0:
+            print('No root! Change the lower and upper value!\n')
+            return self.sigma, np.nan
+
         for i in range(self.maxIter):
             if self.f(a) * self.f(b) < 0:
                 return ridder(self.f, a, b, args=(), xtol=2e-12, rtol=8.8817841970012523e-16, maxiter=100, full_output=True, disp=True)
-            else:
-                b -= 0.1
 
     def bsmScipyNewton(self, x0 = None):
         r = re.compile(r'\d?\.\d+')
@@ -242,25 +244,30 @@ class ImpliedVolatility():
         if x0 == None:
             x0 = self.sigma
         try:
-            return newton(self.f, x0, fprime=None, args=(), tol=1.48e-08, maxiter=50, fprime2=None), 100
+            return newton(self.f, x0, fprime=None, args=(), tol=1.48e-08, maxiter=50, fprime2=None), 0
         except RuntimeError as err:
             return float(r.findall(err.args[0])[0]), 100
 
     def bsmHalleyMomentum(self, t=0.9):
         #newSigma = self.sigma
         for i in range(self.maxIter):
+            oldSigma = self.sigma
+            self.sigma = t * oldSigma - (self.f(oldSigma) / self.bsmVega()) / (1 - self.f(oldSigma) * self.bsmVomma() / (2 * self.bsmVega() * self.bsmVega()))
 
-            newSigma = t * self.sigma - (self.f() / self.bsmVega()) / (1 - self.f() * self.bsmVomma() / (2 * self.bsmVega() * self.bsmVega()))
-            self.sigma = newSigma
-
-            if self.f(self.sigma) < self.tolerance:
-                return self.sigma, i
-            elif np.fabs(newSigma - self.sigma) < self.tolerance:
-                return self.sigma, i
+            if np.fabs(self.f(self.sigma)) < self.tolerance:
+                return self.sigma, i+1
 
             # diverged
+            #if not (0.0 <= self.sigma <= 3):
+            #    print('HalleyMom Diverge!\n')
+            #    return oldSigma, self.maxIter
+
             if np.isnan(self.sigma):
                 break
+
+
+            if np.fabs(oldSigma - self.sigma) < self.tolerance:
+                return self.sigma, i + 1
 
             #if i > (self.maxIter - 20):
             #    print('Steps: {}, {}'.format(newSigma, self.sigma))
@@ -269,4 +276,27 @@ class ImpliedVolatility():
         return self.sigma, self.maxIter
 
 if __name__ == '__main__':
-    pass
+    import methods
+    import pandas as pd
+    import numpy as np
+
+    data = pd.read_csv('europeanOptions_final_0510.csv')
+    data = data.loc[:, ['currentDate', 'ExpDate', 'StrikePrice', 'Ticker', 'Type', 'Last', 'IV', 'StockPrice', 'T']]
+    testMethods = ['brentq', 'brenth', 'ridder', 'bisection', 'mullerBisection', 'newton', 'new_newton', 'halley',
+                   'new_halley', 'halleyMomentum']
+
+    #testMethods = ['bisection']
+    # testSigma = [0.33, 0.66 , 0.99, 1.33, 1.66, 1.99]
+    #testSigma = np.random.uniform(0, 2, 4)
+    testIter = [5]
+    result = pd.DataFrame(index=testMethods,
+                          columns=['log_accuracy', 'mse', 'msd', 'log_mse', 'duration', 'steps', 'efficiency', 'sigma'])
+    dicResult = {}
+
+    for iter in testIter:
+        dicResult[iter] = {}
+        for method in testMethods:
+            print(method)
+            result.loc[method, :] = methods.performance(data, method, initialIter=iter)
+        dicResult[iter] = result.copy()
+        print('This is the test result for initial iteration {:d} times:\n{}\n\n'.format( iter, result))

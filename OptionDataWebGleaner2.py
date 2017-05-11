@@ -70,6 +70,11 @@ class OptionDataWebGleaner():
         self.expir = expir
         self.money = money
         self.exCode = exCode
+        self.headers = {'User-Agent':
+               'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) '
+               'AppleWebKit/537.36 (KHTML, like Gecko)'
+               'Chrome/39.0.2171.95 '
+               'Safari/537.36'}
 
     # get the content of a certain page
     def getUrl(self, page=1):
@@ -79,7 +84,7 @@ class OptionDataWebGleaner():
               + self.exCode + '&page=' + str(page)
 
         try:
-            r = requests.get(url)
+            r = requests.get(url, headers=self.headers)
 
             nasdaqPage = BeautifulSoup(r.content, 'html.parser')
 
@@ -92,7 +97,7 @@ class OptionDataWebGleaner():
         url = 'http://www.nasdaq.com/symbol/' + self.ticker + '/option-chain/greeks?dateindex=' + str(
             self.dateIndex) + '&page=' + str(page)
         try:
-            r = requests.get(url)
+            r = requests.get(url, headers=self.headers)
 
             greeksPage = BeautifulSoup(r.content, 'html.parser')
 
@@ -305,7 +310,7 @@ class OptionDataWebGleaner():
 
             df.to_csv(filename1, mode=mode, header=header)
             try:
-                df = df.loc[(df['IV'] > 0.00) & (df['IV'] < 2.00)]
+                df = df.loc[(df['IV'] > 0.00) & (df['IV'] < 3.00)]
                 df = df.dropna(subset=['Last'])
             except:
                 pass
